@@ -1,0 +1,1 @@
+This directory contains python scripts. The contents of the scripts are solutions to the Alx 0x03. User authentication service task.
