@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""A module for authentication-related routines.
-"""
+"""Auth module"""
 import bcrypt
 from uuid import uuid4
 from typing import Union
@@ -11,14 +10,12 @@ from user import User
 
 
 def _hash_password(password: str) -> bytes:
-    """Hashes a password.
-    """
+    """Hashes a password"""
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
 
 def _generate_uuid() -> str:
-    """Generates a UUID.
-    """
+    """Generates a UUID."""
     return str(uuid4())
 
 
@@ -32,8 +29,7 @@ class Auth:
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
-        """Adds a new user to the database.
-        """
+        """Register a new user"""
         try:
             self._db.find_user_by(email=email)
         except NoResultFound:
@@ -41,8 +37,7 @@ class Auth:
         raise ValueError("User {} already exists".format(email))
 
     def valid_login(self, email: str, password: str) -> bool:
-        """Checks if a user's login details are valid.
-        """
+        """Validates login credentials"""
         user = None
         try:
             user = self._db.find_user_by(email=email)
@@ -56,8 +51,7 @@ class Auth:
         return False
 
     def create_session(self, email: str) -> str:
-        """Creates a new session for a user.
-        """
+        """Creates a session for a user"""
         user = None
         try:
             user = self._db.find_user_by(email=email)
@@ -70,8 +64,7 @@ class Auth:
         return session_id
 
     def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
-        """Retrieves a user based on a given session ID.
-        """
+        """Get a user from a session ID"""
         user = None
         if session_id is None:
             return None
@@ -82,15 +75,13 @@ class Auth:
         return user
 
     def destroy_session(self, user_id: int) -> None:
-        """Destroys a session associated with a given user.
-        """
+        """Destroys a session"""
         if user_id is None:
             return None
         self._db.update_user(user_id, session_id=None)
 
     def get_reset_password_token(self, email: str) -> str:
-        """Generates a password reset token for a user.
-        """
+        """Get a reset password token"""
         user = None
         try:
             user = self._db.find_user_by(email=email)
@@ -103,8 +94,7 @@ class Auth:
         return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
-        """Updates a user's password given the user's reset token.
-        """
+        """Update a user's password"""
         user = None
         try:
             user = self._db.find_user_by(reset_token=reset_token)
